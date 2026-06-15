@@ -7,7 +7,7 @@ on:
 
 env:
   ARCHITECTURES: '["amd64", "aarch64"]'
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/ha-instapaper-feeds
+  IMAGE_NAME: ha-instapaper-feeds
 
 permissions:
   contents: read
@@ -18,8 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=$(jq -r '.version' instapaper-feeds/config.json)" >> $GITHUB_OUTPUT
 
       - name: Get build matrix
         id: matrix
@@ -49,8 +54,9 @@ jobs:
           image: ${{ matrix.image }}
           image-tags: |
             latest
+            ${{ needs.init.outputs.version }}
           push: "true"
-          version: latest
+          version: ${{ needs.init.outputs.version }}
           context: ./instapaper-feeds
           file: ./instapaper-feeds/Dockerfile
           build-args: |
@@ -71,3 +77,4 @@ jobs:
           image-name: ${{ env.IMAGE_NAME }}
           image-tags: |
             latest
+            ${{ needs.init.outputs.version }}
