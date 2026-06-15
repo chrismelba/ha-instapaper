@@ -25,6 +25,6 @@ jobs:
         with:
           args: |
             --amd64 --aarch64
-            --target instapaper-feeds
+            --target /data/instapaper-feeds
             --docker-hub ghcr.io/${{ github.repository_owner }}
             --image ha-instapaper-feeds-{arch}
