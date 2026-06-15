@@ -19,5 +19,5 @@
   "ingress_port": 8099,
   "panel_icon": "mdi:newspaper-variant-multiple",
   "panel_title": "Instapaper Feeds",
-  "image": "ghcr.io/{github_username}/ha-instapaper-feeds-{arch}"
+  "image": "ghcr.io/{github_username}/ha-instapaper-feeds"
 }

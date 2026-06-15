@@ -5,46 +5,69 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+env:
+  ARCHITECTURES: '["amd64", "aarch64"]'
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/ha-instapaper-feeds
+
+permissions:
+  contents: read
+
 jobs:
-  build:
+  init:
+    name: Initialize build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [amd64, aarch64]
-    name: Build Add-on for ${{ matrix.arch }}
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+      - name: Get build matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@master
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          architectures: ${{ env.ARCHITECTURES }}
+          image-name: ${{ env.IMAGE_NAME }}
 
-      - name: Set up build arguments
-        id: build_args
-        run: |
-          if [ "${{ matrix.arch }}" = "aarch64" ]; then
-            echo "platform=linux/arm64" >> $GITHUB_ENV
-          else
-            echo "platform=linux/amd64" >> $GITHUB_ENV
-          fi
+  build:
+    name: Build ${{ matrix.arch }} image
+    needs: init
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.init.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Build image
+        uses: home-assistant/builder/actions/build-image@master
         with:
+          arch: ${{ matrix.arch }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image: ${{ matrix.image }}
+          image-tags: |
+            latest
+          push: "true"
+          version: latest
           context: ./instapaper-feeds
           file: ./instapaper-feeds/Dockerfile
-          platforms: ${{ env.platform }}
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/ha-instapaper-feeds-${{ matrix.arch }}:latest
           build-args: |
-            BUILD_FROM=ghcr.io/hassio-addons/alpine-base:7.3.3
+            BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:latest
+
+  manifest:
+    name: Publish multi-arch manifest
+    needs: [init, build]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Publish multi-arch manifest
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@master
+        with:
+          architectures: ${{ env.ARCHITECTURES }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ${{ env.IMAGE_NAME }}
+          image-tags: |
+            latest
