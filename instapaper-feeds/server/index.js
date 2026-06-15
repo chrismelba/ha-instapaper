@@ -60,7 +60,12 @@ ${urls}
   fs.writeFileSync(TOML_CONFIG_FILE, tomlContent);
 }
 
+let isRunning = false;
+
 function runFeedsToInstapaper() {
+  if (isRunning) return;
+  isRunning = true;
+
   const logStream = fs.createWriteStream(LOGS_FILE, { flags: 'w' });
   const timeStr = new Date().toISOString();
   logStream.write(`[${timeStr}] Starting feeds-to-instapaper...\n`);
@@ -70,18 +75,25 @@ function runFeedsToInstapaper() {
     env: { ...process.env, STATE_DIR: DATA_DIR } // Try to keep state in data dir if the app respects it, or it defaults to current dir
   });
 
-  child.stdout.on('data', (data) => logStream.write(data));
-  child.stderr.on('data', (data) => logStream.write(data));
+  let hasOutput = false;
+
+  child.stdout.on('data', (data) => { hasOutput = true; logStream.write(data); });
+  child.stderr.on('data', (data) => { hasOutput = true; logStream.write(data); });
 
   child.on('close', (code) => {
+    if (!hasOutput) {
+      logStream.write(`[${new Date().toISOString()}] No new articles found.\n`);
+    }
     logStream.write(`[${new Date().toISOString()}] Process exited with code ${code}\n`);
     logStream.end();
+    isRunning = false;
   });
   
   // For local testing if the binary isn't installed
   child.on('error', (err) => {
     logStream.write(`[${new Date().toISOString()}] Failed to start feeds-to-instapaper: ${err.message}\n`);
     logStream.end();
+    isRunning = false;
   });
 }
 
