@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instapaper Feeds</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+                <h1>RSS to Instapaper</h1>
+            </div>
+            <div class="status-indicator">
+                <span class="dot active"></span>
+                <span id="service-status">Service Running</span>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Instapaper Credentials -->
+            <section class="card glass-effect">
+                <h2>Instapaper Account</h2>
+                <p class="subtitle">Connect your Instapaper account to save articles.</p>
+                <div class="form-group">
+                    <label for="username">Email or Username</label>
+                    <input type="text" id="username" placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <div class="actions">
+                    <button id="btn-test-auth" class="btn btn-secondary">Test Connection</button>
+                </div>
+                <div id="auth-status" class="message"></div>
+            </section>
+
+            <!-- RSS Feeds -->
+            <section class="card glass-effect">
+                <h2>RSS Feeds</h2>
+                <p class="subtitle">Manage the feeds you want to automatically sync.</p>
+                
+                <div class="feed-list-container">
+                    <ul id="feed-list" class="feed-list">
+                        <!-- Feeds injected via JS -->
+                    </ul>
+                </div>
+
+                <div class="add-feed-container">
+                    <div class="form-group">
+                        <input type="url" id="new-feed-url" placeholder="https://example.com/feed.xml">
+                    </div>
+                    <button id="btn-add-feed" class="btn btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Feed
+                    </button>
+                </div>
+                <div id="feed-status" class="message"></div>
+            </section>
+
+            <!-- Settings & Logs -->
+            <div class="grid-2-col">
+                <section class="card glass-effect">
+                    <h2>Sync Frequency</h2>
+                    <p class="subtitle">How often should feeds be checked?</p>
+                    <div class="form-group">
+                        <select id="frequency">
+                            <option value="15">Every 15 Minutes</option>
+                            <option value="30">Every 30 Minutes</option>
+                            <option value="60">Every 1 Hour</option>
+                            <option value="120">Every 2 Hours</option>
+                            <option value="360">Every 6 Hours</option>
+                            <option value="1440">Every 24 Hours</option>
+                        </select>
+                    </div>
+                    <div class="actions">
+                        <button id="btn-save-config" class="btn btn-primary w-full">Save Configuration</button>
+                    </div>
+                </section>
+
+                <section class="card glass-effect logs-section">
+                    <div class="logs-header">
+                        <h2>Activity Logs</h2>
+                        <button id="btn-refresh-logs" class="btn btn-icon" aria-label="Refresh Logs">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        </button>
+                    </div>
+                    <div class="logs-container">
+                        <pre id="logs-output">Loading logs...</pre>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

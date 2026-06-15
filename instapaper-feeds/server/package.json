@@ -1,0 +1,15 @@
+{
+  "name": "ha-instapaper-server",
+  "version": "1.0.0",
+  "description": "Wrapper service for feeds-to-instapaper",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.2",
+    "rss-parser": "^3.13.0"
+  }
+}

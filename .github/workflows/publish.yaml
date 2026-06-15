@@ -1,0 +1,30 @@
+name: Publish Add-on
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Add-on
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Publish Add-on
+        uses: home-assistant/builder@master
+        with:
+          args: |
+            --all
+            --target instapaper-feeds
+            --docker-hub ghcr.io/${{ github.repository_owner }}
+            --image ha-instapaper-feeds-{arch}
