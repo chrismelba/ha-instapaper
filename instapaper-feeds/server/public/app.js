@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Functions
     async function loadConfig() {
         try {
-            const res = await fetch('/api/config');
+            const res = await fetch('./api/config');
             config = await res.json();
             
             elUsername.value = config.instapaper.username || '';
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadLogs() {
         try {
-            const res = await fetch('/api/logs');
+            const res = await fetch('./api/logs');
             const text = await res.text();
             logsOutput.textContent = text;
             logsOutput.scrollTop = logsOutput.scrollHeight;
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnTestAuth.disabled = true;
 
         try {
-            const res = await fetch('/api/validate-instapaper', {
+            const res = await fetch('./api/validate-instapaper', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAddFeed.disabled = true;
 
         try {
-            const res = await fetch('/api/validate-rss', {
+            const res = await fetch('./api/validate-rss', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSaveConfig.disabled = true;
 
         try {
-            const res = await fetch('/api/config', {
+            const res = await fetch('./api/config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSyncNow.disabled = true;
 
         try {
-            const res = await fetch('/api/sync', { method: 'POST' });
+            const res = await fetch('./api/sync', { method: 'POST' });
             if (res.ok) {
                 const btnOriginalBg = btnSyncNow.style.backgroundColor;
                 btnSyncNow.innerHTML = 'Sync Started!';
