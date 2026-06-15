@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const elFrequency = document.getElementById('frequency');
     const btnSaveConfig = document.getElementById('btn-save-config');
+    const btnSyncNow = document.getElementById('btn-sync-now');
     
     const logsOutput = document.getElementById('logs-output');
     const btnRefreshLogs = document.getElementById('btn-refresh-logs');
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnTestAuth.addEventListener('click', testAuth);
     btnAddFeed.addEventListener('click', addFeed);
     btnSaveConfig.addEventListener('click', saveConfig);
+    btnSyncNow.addEventListener('click', syncNow);
     btnRefreshLogs.addEventListener('click', loadLogs);
 
     // Functions
@@ -195,6 +197,33 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Failed to save config', error);
             btnSaveConfig.innerHTML = originalText;
             btnSaveConfig.disabled = false;
+        }
+    }
+
+    async function syncNow() {
+        const originalText = btnSyncNow.innerHTML;
+        btnSyncNow.innerHTML = '<svg class="loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Syncing...';
+        btnSyncNow.disabled = true;
+
+        try {
+            const res = await fetch('/api/sync', { method: 'POST' });
+            if (res.ok) {
+                const btnOriginalBg = btnSyncNow.style.backgroundColor;
+                btnSyncNow.innerHTML = 'Sync Started!';
+                btnSyncNow.style.backgroundColor = 'var(--success-color)';
+                btnSyncNow.style.color = 'white';
+                setTimeout(() => {
+                    btnSyncNow.innerHTML = originalText;
+                    btnSyncNow.style.backgroundColor = btnOriginalBg;
+                    btnSyncNow.style.color = '';
+                    btnSyncNow.disabled = false;
+                    loadLogs();
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Failed to trigger sync', error);
+            btnSyncNow.innerHTML = originalText;
+            btnSyncNow.disabled = false;
         }
     }
 

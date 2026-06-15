@@ -143,6 +143,11 @@ app.post('/api/validate-rss', async (req, res) => {
   }
 });
 
+app.post('/api/sync', (req, res) => {
+  runFeedsToInstapaper();
+  res.json({ success: true });
+});
+
 app.get('/api/logs', (req, res) => {
   if (fs.existsSync(LOGS_FILE)) {
     res.send(fs.readFileSync(LOGS_FILE, 'utf8'));
