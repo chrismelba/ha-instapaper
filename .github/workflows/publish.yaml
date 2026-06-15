@@ -56,6 +56,7 @@ jobs:
             latest
             ${{ needs.init.outputs.version }}
           push: "true"
+          cosign: "false"
           version: ${{ needs.init.outputs.version }}
           context: ./instapaper-feeds
           file: ./instapaper-feeds/Dockerfile
@@ -75,6 +76,7 @@ jobs:
           architectures: ${{ env.ARCHITECTURES }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image-name: ${{ env.IMAGE_NAME }}
+          cosign: "false"
           image-tags: |
             latest
             ${{ needs.init.outputs.version }}
